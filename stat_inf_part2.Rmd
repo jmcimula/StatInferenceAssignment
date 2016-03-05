@@ -1,0 +1,65 @@
+---
+title: 'Stat. Inf. Part 2: ToothGrowth'
+author: "Jean Marie Cimula"
+date: "5 March 2016"
+output: html_document
+---
+
+####Overview
+Now in the second portion of the class, we're going to analyze the ToothGrowth data in the R datasets package.
+
+(1) Load the ToothGrowth data and perform some basic exploratory data analyses
+(2) Provide a basic summary of the data.
+(3) Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from       class, even if there's other approaches worth considering)
+(4) State your conclusions and the assumptions needed for your conclusions.
+
+####Load the ToothGrowth data and perform exploratory data analyses
+
+Below type, nature and summary of data in our dataset.
+
+Basic summary of the data
+
+```{r}
+library(datasets)
+data(ToothGrowth)
+str(ToothGrowth)
+head(ToothGrowth)
+summary(ToothGrowth)
+```
+
+Numbers of rows : `r dim(ToothGrowth)[1]` and columns : `r dim(ToothGrowth)[2]`
+
+Loading some libraries
+```{r results='hide', message=FALSE, warning=FALSE}
+library(ggplot2)
+library(GGally)
+```
+
+Below we perform exploratory data analyses
+
+```{r}
+library(ggplot2)
+ggplot(data=ToothGrowth, aes(x=as.factor(dose), y=len, fill=supp)) + geom_bar(stat="identity",) +
+       facet_grid(. ~ supp) + xlab("Dose") + ylab("Length") +
+       guides(fill=guide_legend(title="Exploratory Data Analyses"))
+```
+
+####Provide a basic summary of the data
+```{r}
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+summary(ToothGrowth)
+table(ToothGrowth$supp, ToothGrowth$dose)
+```
+
+####Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose
+
+Using the package GGally to summary all hypothesis tests and confidence intervals for the variables supp and dose in a single view
+```{r}
+an <- aov(len ~ supp * dose, data=ToothGrowth)
+summary(an)
+confint(an)
+print(model.tables(an,"means"),digits=3)
+```
+
+####State your conclusions and the assumptions needed for your conclusions
+Based on the result below our assumptions are that the distrribution of the mean is normal. There is no doubt that OC and VJ have obvious different impact on ToothGrowth.
